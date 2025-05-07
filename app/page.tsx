@@ -462,15 +462,15 @@ export default function Home() {
             </div>
             <div className="mx-auto grid max-w-5xl grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 py-8 sm:py-12">
               <TestimonialCard
-                name="Adamu"
+                name="Adamu abu"
                 role="Regular Customer"
-                quote="FreshPress has been my go-to laundry service for over a year now. Their attention to detail is amazing!"
+                quote="Aeroverse Laundry has been my go-to laundry service for over a year now. Their attention to detail is amazing!"
                 avatar="/placeholder.svg?height=100&width=100"
               />
               <TestimonialCard
                 name="shaban kadala"
-                role="Business Owner"
-                quote="As a restaurant owner, I need reliable laundry service for our linens. FreshPress delivers consistently."
+                role="Restaurant Owner"
+                quote="As a restaurant owner, I need reliable laundry service for our linens. Aeroverse delivers consistently."
                 avatar="/placeholder.svg?height=100&width=100"
               />
               <TestimonialCard
