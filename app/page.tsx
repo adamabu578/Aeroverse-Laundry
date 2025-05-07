@@ -1,535 +1,693 @@
 "use client"
-import { useState, useEffect, useRef } from "react"
-import type React from "react"
-import Image from "next/image"
 
-import { Download, ChevronRight, Menu, X, Send } from "lucide-react"
-import { motion, AnimatePresence } from "framer-motion"
-import emailjs from "@emailjs/browser"
+import { useState } from "react"
+import Link from "next/link"
+import { WashingMachineIcon as Washing, Shirt, Clock, MapPin, Phone, Mail, ArrowRight, Menu } from "lucide-react"
 
-export default function AppLaunchPage() {
-  const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
-  const [scrolled, setScrolled] = useState(false)
-  const [formData, setFormData] = useState({
-    name: "",
-    email: "",
-  })
-  const [formStatus, setFormStatus] = useState<{
-    submitting: boolean
-    submitted: boolean
-    error: string | null
-  }>({
-    submitting: false,
-    submitted: false,
-    error: null,
-  })
+import { Button } from "@/components/ui/button"
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet"
+import ServiceCard from "@/components/Service-Card"
+import TestimonialCard from "@/components/Testimonial"
 
-  const formRef = useRef<HTMLFormElement | null>(null)
-
-  // Handle scroll effect for navbar
-  useEffect(() => {
-    const handleScroll = () => {
-      const isScrolled = window.scrollY > 10
-      if (isScrolled !== scrolled) {
-        setScrolled(isScrolled)
-      }
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => {
-      window.removeEventListener("scroll", handleScroll)
-    }
-  }, [scrolled])
-
-  // Handle form input changes
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
-  // Handle form submission
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setFormStatus({ submitting: true, submitted: false, error: null })
-
-    // Replace these with your actual EmailJS credentials
-    const serviceId = "service_n5ev2m5"
-    const templateId = "template_zw92h1a"
-    const publicKey = "e9Tht_Br8bnu563wU"
-
-    if (formRef.current) {
-      emailjs
-        .sendForm(serviceId, templateId, formRef.current, publicKey)
-        .then((result) => {
-          setFormStatus({ submitting: false, submitted: true, error: null })
-          setFormData({ name: "", email: "" })
-          // After successful submission, you might want to redirect to download
-          setTimeout(() => {
-            const downloadButton = document.getElementById("download-button")
-            if (downloadButton) {
-              downloadButton.click()
-            }
-          }, 1500)
-        })
-        .catch((error) => {
-          setFormStatus({ submitting: false, submitted: false, error: error.text })
-        })
-    } else {
-      setFormStatus({ submitting: false, submitted: false, error: "Form reference is null" })
-    }
-  }
-
-  // App details - customize these values
-  const appName = "smatpay"
-  const appTagline = "Manage and pay All your Bills, From One Place!"
-  const appDescription = "Your Trusted VTU and Bill Payment Platform for Quick Seamless Transactions,Anywhere,Anytime!"
-  const downloadLink = "#download" // Replace with actual download link
-
-  // Features list - simplified
-  const features = [
-    {
-      title: "Pay bills on the go",
-      description: "manage and settle your bills anytime, anywhere.",
-    },
-    {
-      title: "Secure",
-      description: "Your data is protected with industry-leading encryption",
-    },
-    {
-      title: "Cross-Platform",
-      description: "Works seamlessly across all your devices",
-    },
-  ]
+export default function Home() {
+  const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+    <div className="flex flex-col min-h-screen">
       {/* Navigation */}
-      <motion.nav
-        className={`fixed w-full z-50 transition-all duration-300 ${
-          scrolled ? "bg-white bg-opacity-95 shadow-md backdrop-blur-md" : "bg-transparent"
-        }`}
-        initial={{ y: -100 }}
-        animate={{ y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between h-16">
-            <motion.div
-              className="flex items-center"
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.2, duration: 0.5 }}
-            >
-              <div className="flex-shrink-0 flex items-center">
-                <motion.span className="text-purple-700 font-bold text-xl" whileHover={{ scale: 1.05 }}>
-                  {/* {appName} */}
-                  <img src={"/assets/smatpay.png"} alt="Logo" className="h-15 w-20 mr-2" />
-                </motion.span>
+      <header className="sticky top-0 z-40 w-full border-b bg-background">
+        <div className="container flex h-16 items-center justify-between py-4">
+          <div className="flex items-center gap-2">
+            <img src={'/assets/aeroverse.png'} className="h-15 w-20" />
+            <span className="text-xl font-bold">Aeroverse Laundry</span>
+          </div>
+
+          {/* Desktop Navigation */}
+          <nav className="hidden md:flex items-center gap-6">
+            <Link href="/" className="text-sm font-medium hover:text-sky-600 transition-colors">
+              Home
+            </Link>
+            <Link href="#services" className="text-sm font-medium hover:text-sky-600 transition-colors">
+              Services
+            </Link>
+            <Link href="#pricing" className="text-sm font-medium hover:text-sky-600 transition-colors">
+              Pricing
+            </Link>
+            <Link href="#contact" className="text-sm font-medium hover:text-sky-600 transition-colors">
+              Contact
+            </Link>
+          </nav>
+
+          {/* Mobile Navigation */}
+          <div className="md:hidden">
+            <Sheet open={isOpen} onOpenChange={setIsOpen}>
+              <SheetTrigger asChild>
+                <Button variant="ghost" size="icon" className="md:hidden">
+                  <Menu className="h-5 w-5" />
+                  <span className="sr-only">Toggle menu</span>
+                </Button>
+              </SheetTrigger>
+              <SheetContent side="right" className="w-[250px] sm:w-[300px]">
+                <nav className="flex flex-col gap-4 mt-8">
+                  <Link
+                    href="/"
+                    className="text-base font-medium hover:text-sky-600 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    href="#services"
+                    className="text-base font-medium hover:text-sky-600 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Services
+                  </Link>
+                  <Link
+                    href="#pricing"
+                    className="text-base font-medium hover:text-sky-600 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Pricing
+                  </Link>
+                  <Link
+                    href="#contact"
+                    className="text-base font-medium hover:text-sky-600 transition-colors"
+                    onClick={() => setIsOpen(false)}
+                  >
+                    Contact
+                  </Link>
+                </nav>
+              </SheetContent>
+            </Sheet>
+          </div>
+
+          <div className="hidden md:block">
+            <Button className="bg-sky-600 hover:bg-sky-700">Book Now</Button>
+          </div>
+        </div>
+      </header>
+
+      <main className="flex-1">
+        {/* Hero Section */}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gradient-to-b from-sky-50 to-white">
+          <div className="container px-4 md:px-6">
+            <div className="grid gap-6 lg:grid-cols-2 lg:gap-12 items-center">
+              <div className="flex flex-col justify-center space-y-4">
+                <div className="space-y-2">
+                  <h1 className="text-3xl font-bold tracking-tighter sm:text-4xl md:text-5xl xl:text-6xl/none">
+                    Professional Laundry Services for Your Clothes
+                  </h1>
+                  <p className="max-w-[600px] text-gray-500 text-sm sm:text-base md:text-xl">
+                    We take care of your clothes with professional cleaning services. Fast, reliable, and affordable.
+                  </p>
+                </div>
+                <div className="flex flex-col sm:flex-row gap-2">
+                  <Button className="bg-sky-600 hover:bg-sky-700">Get Started</Button>
+                  <Button variant="outline">Learn More</Button>
+                </div>
               </div>
-              <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
-                <motion.a
-                  href="#features"
-                  className="text-gray-500 hover:text-blue-600 inline-flex items-center px-1 py-1 text-sm font-medium"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  Features
-                </motion.a>
-                <motion.a
-                  href="https://downloads.smatpay.live/smatpay.apk"
-                  className="text-gray-500 hover:text-blue-600 inline-flex items-center px-1 py-1 text-sm font-medium"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  Download
-                </motion.a>
+              <div className="flex justify-center mt-6 lg:mt-0">
+                <img
+                  src="/assets/laundry-bg.jpg"
+                  alt="Laundry Service"
+                  className="rounded-lg object-cover w-full max-w-[600px] aspect-video overflow-hidden"
+                  width={600}
+                  height={400}
+                />
               </div>
-            </motion.div>
-            <div className="sm:hidden flex items-center">
-              <motion.button
-                onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-                className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-blue-600 focus:outline-none"
-                whileTap={{ scale: 0.95 }}
-              >
-                {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-              </motion.button>
             </div>
           </div>
-        </div>
+        </section>
 
-        {/* Mobile menu */}
-        <AnimatePresence>
-          {mobileMenuOpen && (
-            <motion.div
-              className="sm:hidden bg-white bg-opacity-95 backdrop-blur-md"
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto" }}
-              exit={{ opacity: 0, height: 0 }}
-              transition={{ duration: 0.3 }}
-            >
-              <div className="pt-2 pb-3 space-y-1">
-                <motion.a
-                  href="#features"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-2 text-base font-medium text-gray-600 hover:text-blue-600"
-                  whileHover={{ x: 5 }}
-                >
-                  Features
-                </motion.a>
-                <motion.a
-                  href="#download"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="block px-4 py-2 text-base font-medium text-gray-600 hover:text-blue-600"
-                  whileHover={{ x: 5 }}
-                >
-                  Download
-                </motion.a>
+        {/* Features Section */}
+        <section className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <div className="inline-block rounded-lg bg-sky-100 px-3 py-1 text-sm text-sky-600">Why Choose Us</div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter">
+                  Quality Laundry Services
+                </h2>
+                <p className="max-w-[900px] text-gray-500 text-sm sm:text-base md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  We provide professional laundry services with attention to detail and care for your clothes.
+                </p>
               </div>
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.nav>
-
-      {/* Hero Section */}
-      <div className="relative bg-gradient-to-r from-blue-50 to-indigo-50 overflow-hidden py-20">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col lg:flex-row items-center">
-            <motion.div
-              className="lg:w-1/2 text-center lg:text-left"
-              initial={{ opacity: 0, y: 50 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-            >
-              <motion.h1
-                className="text-5xl font-bold text-gray-900"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.2, duration: 0.8 }}
-              >
-                <span className="text-purple-700">{appName}</span>
-              </motion.h1>
-              <motion.p
-                className="mt-4 text-xl text-gray-600 font-light"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.4, duration: 0.8 }}
-              >
-                {appTagline}
-              </motion.p>
-              <motion.p
-                className="mt-2 text-gray-500"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.6, duration: 0.8 }}
-              >
-                {appDescription}
-              </motion.p>
-              <motion.div
-                className="mt-8 flex flex-col sm:flex-row justify-center lg:justify-start space-y-4 sm:space-y-0 sm:space-x-4"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.8, duration: 0.8 }}
-              >
-                <motion.a
-                  href="https://downloads.smatpay.live/smatpay.apk"
-                  // className="px-8 py-3 rounded-lg text-white font-medium flex items-center justify-center shadow-lg hover:bg-purple-700 transition-colors duration-300 w-[150px] h-[80px]"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  {/* <Download size={20} className="mr-2" />
-                  Download Now */}
-                   <button className="">
-                   <img src={"/assets/Google.png"} className="lg:w-[150px] lg:h-[50px] shadow-md rounded-lg w-[150px] h-[50px] " />
-                  </button>
-                </motion.a>
-                <motion.a
-                  href="#features"
-                  className="lg:w-[180px] lg:h-[50px] px-8 py-3 rounded-lg bg-white text-purple-700 font-medium flex items-center justify-center shadow-md hover:bg-gray-50 transition-colors duration-300"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  Learn More
-                  <ChevronRight size={20} className="ml-2" />
-                </motion.a>
-              </motion.div>
-            </motion.div>
-
-            <motion.div
-              className="lg:w-1/2 mt-12 lg:mt-0 flex justify-center"
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.6, duration: 0.8 }}
-            >
-              <motion.div
-                className="relative w-80 h-80"
-                animate={{
-                  y: [0, -15, 0],
-                }}
-                transition={{
-                  repeat: Number.POSITIVE_INFINITY,
-                  duration: 3,
-                  ease: "easeInOut",
-                }}
-              >
-                <div className="absolute inset-0 bg-purple-700 rounded-3xl shadow-2xl flex items-center justify-center transform rotate-3">
-                  <motion.div
-                    className="flex flex-col items-center justify-center text-white w-full h-full relative"
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.5, duration: 1 }}
-                  >
-                    {/* Text animations */}
-                    <motion.span
-                      className="text-5xl font-bold mb-2 z-10"
-                      initial={{ y: 50, opacity: 0 }}
-                      animate={{ y: 0, opacity: 1 }}
-                      transition={{
-                        delay: 0.8,
-                        duration: 0.8,
-                        type: "spring",
-                        stiffness: 100,
-                      }}
-                    >
-                      Finally
-                    </motion.span>
-                    <motion.span
-                      className="text-6xl font-extrabold z-10"
-                      initial={{ scale: 0.5, opacity: 0 }}
-                      animate={{ scale: 1, opacity: 1 }}
-                      transition={{
-                        delay: 1.2,
-                        duration: 0.8,
-                        type: "spring",
-                        stiffness: 120,
-                      }}
-                    >
-                      LAUNCH
-                    </motion.span>
-                    <motion.div
-                      className="mt-4 bg-white px-4 py-1 rounded-full z-10"
-                      initial={{ scaleX: 0 }}
-                      animate={{ scaleX: 1 }}
-                      transition={{ delay: 1.6, duration: 0.5 }}
-                    >
-                      <motion.span
-                        className="text-purple-700 font-medium"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        transition={{ delay: 1.9, duration: 0.3 }}
-                      >
-                        {appName}
-                      </motion.span>
-                    </motion.div>
-                    {/* Add background image */}
-                    <motion.div
-                      className="absolute inset-0 z-0 opacity-30"
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 0.3 }}
-                      transition={{ delay: 0.5, duration: 1 }}
-                    >
-                      <Image
-                        src="/assets/cartoon.png"
-                        alt="App launch background"
-                        width={320}
-                        height={320}
-                        className="w-full h-full object-cover rounded-3xl"
-                      />
-                    </motion.div>
-                  </motion.div>
+            </div>
+            <div className="mx-auto grid max-w-5xl grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 py-8 sm:py-12">
+              <div className="flex flex-col items-center space-y-2 rounded-lg border p-4 sm:p-6 shadow-sm">
+                <div className="rounded-full bg-sky-100 p-3">
+                  <Shirt className="h-6 w-6 text-sky-600" />
                 </div>
-              </motion.div>
-            </motion.div>
+                <h3 className="text-xl font-bold">Expert Care</h3>
+                <p className="text-center text-gray-500 text-sm sm:text-base">
+                  Our professionals handle your clothes with care, ensuring they look their best.
+                </p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 rounded-lg border p-4 sm:p-6 shadow-sm">
+                <div className="rounded-full bg-sky-100 p-3">
+                  <Clock className="h-6 w-6 text-sky-600" />
+                </div>
+                <h3 className="text-xl font-bold">Quick Turnaround</h3>
+                <p className="text-center text-gray-500 text-sm sm:text-base">
+                  Get your clothes back fast with our efficient service and timely delivery.
+                </p>
+              </div>
+              <div className="flex flex-col items-center space-y-2 rounded-lg border p-4 sm:p-6 shadow-sm sm:col-span-2 md:col-span-1">
+                <div className="rounded-full bg-sky-100 p-3">
+                  <MapPin className="h-6 w-6 text-sky-600" />
+                </div>
+                <h3 className="text-xl font-bold">Convenient Location</h3>
+                <p className="text-center text-gray-500 text-sm sm:text-base">
+                  We're located in the heart of the city, making drop-offs and pick-ups easy.
+                </p>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
+        </section>
 
-      {/* Features Section */}
-      <div id="features" className="py-16 bg-white">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-3xl font-bold text-gray-900">Why Choose {appName}?</h2>
-            <p className="mt-4 text-xl text-gray-500 max-w-2xl mx-auto">
-              Your top payment platform with reliable user-service experience
-            </p>
-          </motion.div>
+        {/* Services Section */}
+        <section id="services" className="w-full py-12 md:py-24 lg:py-32 bg-gray-50">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <div className="inline-block rounded-lg bg-sky-100 px-3 py-1 text-sm text-sky-600">Our Services</div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter">
+                  What We Offer
+                </h2>
+                <p className="max-w-[900px] text-gray-500 text-sm sm:text-base md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  Comprehensive laundry services tailored to your needs.
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto grid max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 py-8 sm:py-12">
+              <ServiceCard
+                title="Wash & Fold"
+                description="Regular washing and folding service for everyday clothes."
+                icon={Shirt}
+                price="$2.50/lb"
+              />
+              <ServiceCard
+                title="Dry Cleaning"
+                description="Professional dry cleaning for delicate fabrics and formal wear."
+                icon={Shirt}
+                price="From $8.99"
+              />
+              <ServiceCard
+                title="Ironing"
+                description="Expert ironing service to keep your clothes wrinkle-free."
+                icon={Shirt}
+                price="$3.00/item"
+              />
+              <ServiceCard
+                title="Stain Removal"
+                description="Specialized stain removal for tough spots and marks."
+                icon={Shirt}
+                price="From $5.99"
+              />
+              <ServiceCard
+                title="Alterations"
+                description="Professional alterations and repairs for your garments."
+                icon={Shirt}
+                price="From $10.99"
+              />
+              <ServiceCard
+                title="Express Service"
+                description="Same-day service for urgent laundry needs."
+                icon={Shirt}
+                price="+50% regular price"
+              />
+            </div>
+          </div>
+        </section>
 
-          <motion.div
-            className="mt-16 grid md:grid-cols-3 gap-12"
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            viewport={{ once: true }}
-          >
-            {features.map((feature, index) => (
-              <motion.div
-                key={index}
-                className="bg-purple-700 rounded-2xl p-8 text-center hover:shadow-xl transition-shadow duration-300"
-                initial={{ opacity: 0, y: 30 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: index * 0.1 }}
-                whileHover={{ y: -8 }}
-                viewport={{ once: true }}
-              >
-                <motion.div
-                  className="h-16 w-16 rounded-full bg-black text-blue-600 flex items-center justify-center mx-auto mb-4"
-                  whileHover={{ rotate: 10 }}
-                >
-                  <svg xmlns="http://www.w3.org/2000/svg" className="h-8 w-8" viewBox="0 0 20 20" fill="currentColor">
-                    <path
-                      fillRule="evenodd"
-                      d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </motion.div>
-                <h3 className="text-xl font-semibold text-white">{feature.title}</h3>
-                <p className="mt-2 text-white">{feature.description}</p>
-              </motion.div>
-            ))}
-          </motion.div>
-        </div>
-      </div>
+        {/* Pricing Section */}
+        <section id="pricing" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <div className="inline-block rounded-lg bg-sky-100 px-3 py-1 text-sm text-sky-600">Pricing</div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter">
+                  Simple, Transparent Pricing
+                </h2>
+                <p className="max-w-[900px] text-gray-500 text-sm sm:text-base md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  Choose the plan that works best for your laundry needs.
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto grid max-w-5xl grid-cols-1 md:grid-cols-3 gap-4 sm:gap-6 py-8 sm:py-12">
+              <Card className="flex flex-col h-full">
+                <CardHeader>
+                  <CardTitle>Basic</CardTitle>
+                  <CardDescription>For occasional laundry needs</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <div className="text-4xl font-bold">
+                    $2.50<span className="text-sm font-normal text-gray-500">/lb</span>
+                  </div>
+                  <ul className="mt-4 space-y-2">
+                    <li className="flex items-center">
+                      <svg
+                        className="mr-2 h-4 w-4 text-green-500"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      Wash & Fold
+                    </li>
+                    <li className="flex items-center">
+                      <svg
+                        className="mr-2 h-4 w-4 text-green-500"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      48-hour turnaround
+                    </li>
+                    <li className="flex items-center text-gray-400">
+                      <svg
+                        className="mr-2 h-4 w-4"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path d="M18 6 6 18" />
+                        <path d="m6 6 12 12" />
+                      </svg>
+                      Free delivery
+                    </li>
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button className="w-full bg-sky-600 hover:bg-sky-700">Choose Plan</Button>
+                </CardFooter>
+              </Card>
+              <Card className="border-sky-600 flex flex-col h-full relative">
+                <div className="absolute top-0 left-0 right-0 flex justify-center">
+                  <div className="bg-sky-600 text-white text-xs rounded-full px-2 py-1 -mt-3">POPULAR</div>
+                </div>
+                <CardHeader>
+                  <CardTitle>Standard</CardTitle>
+                  <CardDescription>For regular laundry needs</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <div className="text-4xl font-bold">
+                    $49.99<span className="text-sm font-normal text-gray-500">/month</span>
+                  </div>
+                  <ul className="mt-4 space-y-2">
+                    <li className="flex items-center">
+                      <svg
+                        className="mr-2 h-4 w-4 text-green-500"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      Up to 30 lbs per month
+                    </li>
+                    <li className="flex items-center">
+                      <svg
+                        className="mr-2 h-4 w-4 text-green-500"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      24-hour turnaround
+                    </li>
+                    <li className="flex items-center">
+                      <svg
+                        className="mr-2 h-4 w-4 text-green-500"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      Free delivery
+                    </li>
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button className="w-full bg-sky-600 hover:bg-sky-700">Choose Plan</Button>
+                </CardFooter>
+              </Card>
+              <Card className="flex flex-col h-full">
+                <CardHeader>
+                  <CardTitle>Premium</CardTitle>
+                  <CardDescription>For families and heavy users</CardDescription>
+                </CardHeader>
+                <CardContent className="flex-grow">
+                  <div className="text-4xl font-bold">
+                    $89.99<span className="text-sm font-normal text-gray-500">/month</span>
+                  </div>
+                  <ul className="mt-4 space-y-2">
+                    <li className="flex items-center">
+                      <svg
+                        className="mr-2 h-4 w-4 text-green-500"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      Up to 60 lbs per month
+                    </li>
+                    <li className="flex items-center">
+                      <svg
+                        className="mr-2 h-4 w-4 text-green-500"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      Same-day service
+                    </li>
+                    <li className="flex items-center">
+                      <svg
+                        className="mr-2 h-4 w-4 text-green-500"
+                        fill="none"
+                        height="24"
+                        stroke="currentColor"
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth="2"
+                        viewBox="0 0 24 24"
+                        width="24"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <polyline points="20 6 9 17 4 12" />
+                      </svg>
+                      Priority delivery
+                    </li>
+                  </ul>
+                </CardContent>
+                <CardFooter>
+                  <Button className="w-full bg-sky-600 hover:bg-sky-700">Choose Plan</Button>
+                </CardFooter>
+              </Card>
+            </div>
+          </div>
+        </section>
 
-      {/* Download Section with Email Form */}
-      <div id="download" className="bg-purple-700 py-20">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div
-            className="text-center"
-            initial={{ opacity: 0, y: 40 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-          >
-            <h2 className="text-4xl font-bold text-white">Ready to Try {appName}?</h2>
-            <p className="mt-4 text-lg text-black max-w-2xl mx-auto">
-              Enter your details to receive the download link via email.
-            </p>
+        {/* Testimonials */}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-gray-50">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <div className="inline-block rounded-lg bg-sky-100 px-3 py-1 text-sm text-sky-600">Testimonials</div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter">
+                  What Our Customers Say
+                </h2>
+                <p className="max-w-[900px] text-gray-500 text-sm sm:text-base md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  Don't just take our word for it. Here's what our customers have to say.
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto grid max-w-5xl grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 py-8 sm:py-12">
+              <TestimonialCard
+                name="Adamu"
+                role="Regular Customer"
+                quote="FreshPress has been my go-to laundry service for over a year now. Their attention to detail is amazing!"
+                avatar="/placeholder.svg?height=100&width=100"
+              />
+              <TestimonialCard
+                name="shaban kadala"
+                role="Business Owner"
+                quote="As a restaurant owner, I need reliable laundry service for our linens. FreshPress delivers consistently."
+                avatar="/placeholder.svg?height=100&width=100"
+              />
+              <TestimonialCard
+                name="emmanuel"
+                role="Working Professional"
+                quote="The monthly subscription saves me so much time. I never have to worry about laundry anymore!"
+                avatar="/placeholder.svg?height=100&width=100"
+              />
+            </div>
+          </div>
+        </section>
 
-            <motion.div
-              className="mt-12 max-w-md mx-auto"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.3, duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              {!formStatus.submitted ? (
-                <motion.form
-                  ref={formRef}
-                  onSubmit={handleSubmit}
-                  className="bg-white shadow-lg rounded-lg p-6"
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <div className="mb-4">
-                    <label htmlFor="name" className="block text-gray-700 text-sm font-bold mb-2">
-                      Your Name
+        {/* Contact Section */}
+        <section id="contact" className="w-full py-12 md:py-24 lg:py-32">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <div className="inline-block rounded-lg bg-sky-100 px-3 py-1 text-sm text-sky-600">Contact Us</div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter">
+                  Get In Touch
+                </h2>
+                <p className="max-w-[900px] text-gray-500 text-sm sm:text-base md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  Have questions? We're here to help. Reach out to us.
+                </p>
+              </div>
+            </div>
+            <div className="mx-auto grid max-w-5xl grid-cols-1 md:grid-cols-2 gap-8 py-8 sm:py-12">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-3">
+                  <MapPin className="h-5 w-5 text-sky-600 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">123 kaduna zaria road</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Phone className="h-5 w-5 text-sky-600 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">+2347036352800</span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  <Mail className="h-5 w-5 text-sky-600 flex-shrink-0" />
+                  <span className="text-sm sm:text-base">info@aeroverselaundry.com</span>
+                </div>
+                <div className="pt-4">
+                  <h3 className="text-xl font-bold mb-2">Business Hours</h3>
+                  <div className="grid grid-cols-2 gap-2 text-sm sm:text-base">
+                    <div>Monday - Friday</div>
+                    <div>7:00 AM - 8:00 PM</div>
+                    <div>Saturday</div>
+                    <div>8:00 AM - 6:00 PM</div>
+                    <div>Sunday</div>
+                    <div>10:00 AM - 4:00 PM</div>
+                  </div>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="name"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Name
                     </label>
                     <input
-                      type="text"
                       id="name"
-                      name="name"
-                      value={formData.name}
-                      onChange={handleInputChange}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder=""
-                      required
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      placeholder="Enter your name"
                     />
                   </div>
-
-                  <div className="mb-6">
-                    <label htmlFor="email" className="block text-gray-700 text-sm font-bold mb-2">
-                      Email Address
+                  <div className="space-y-2">
+                    <label
+                      htmlFor="email"
+                      className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
+                    >
+                      Email
                     </label>
                     <input
-                      type="email"
                       id="email"
-                      name="email"
-                      value={formData.email}
-                      onChange={handleInputChange}
-                      className="shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:ring-2 focus:ring-purple-500"
-                      placeholder=""
-                      required
+                      type="email"
+                      className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                      placeholder="Enter your email"
                     />
                   </div>
-
-                  {formStatus.error && <div className="mb-4 text-red-500 text-sm">Error: {formStatus.error}</div>}
-
-                  <motion.button
-                    type="submit"
-                    disabled={formStatus.submitting}
-                    className="w-full px-6 py-3 rounded-lg text-white bg-purple-700 font-medium flex items-center justify-center shadow-md hover:bg-purple-800 transition-colors duration-300 disabled:opacity-50"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="subject"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    {formStatus.submitting ? (
-                      <span>Sending...</span>
-                    ) : (
-                      <>
-                        <Send size={18} className="mr-2" />
-                        Send Download Link
-                      </>
-                    )}
-                  </motion.button>
-                </motion.form>
-              ) : (
-                <motion.div
-                  className="bg-white shadow-lg rounded-lg p-6 text-center"
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.4 }}
-                >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    className="h-16 w-16 text-green-500 mx-auto mb-4"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
+                    Subject
+                  </label>
+                  <input
+                    id="subject"
+                    className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Enter subject"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <label
+                    htmlFor="message"
+                    className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                   >
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
-                  </svg>
-                  <h3 className="text-xl font-medium text-gray-900 mb-2">Thank You!</h3>
-                  <p className="text-gray-600 mb-4">We've sent the download link to your email.</p>
-                  <motion.a
-                    id="download-button"
-                    href={downloadLink}
-                    className="px-6 py-2 rounded-lg text-white bg-purple-700 font-medium inline-flex items-center justify-center shadow-md hover:bg-purple-800 transition-colors duration-300"
-                    whileHover={{ scale: 1.05 }}
-                    whileTap={{ scale: 0.95 }}
-                  >
-                    <Download size={18} className="mr-2" />
-                    Download Now
-                  </motion.a>
-                </motion.div>
-              )}
-            </motion.div>
+                    Message
+                  </label>
+                  <textarea
+                    id="message"
+                    className="flex min-h-[120px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                    placeholder="Enter your message"
+                  />
+                </div>
+                <Button className="w-full bg-sky-600 hover:bg-sky-700">Send Message</Button>
+              </div>
+            </div>
+          </div>
+        </section>
 
-            <motion.p
-              className="mt-6 text-sm text-black"
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              transition={{ delay: 0.4, duration: 0.6 }}
-              viewport={{ once: true }}
-            >
-              Available for iOS and Android
-            </motion.p>
-          </motion.div>
-        </div>
-      </div>
+        {/* CTA Section */}
+        <section className="w-full py-12 md:py-24 lg:py-32 bg-sky-600 text-white">
+          <div className="container px-4 md:px-6">
+            <div className="flex flex-col items-center justify-center space-y-4 text-center">
+              <div className="space-y-2">
+                <h2 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold tracking-tighter">
+                  Ready to Experience Fresh, Clean Clothes?
+                </h2>
+                <p className="max-w-[900px]  xl:text-xl/relaxe  text-sky-100 text-sm sm:text-base md:text-xl/relaxed lg:text-base/relaxed xl:text-xl/relaxed">
+                  Join thousands of satisfied customers who trust us with their laundry.
+                </p>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <Button className="bg-white text-sky-600 hover:bg-sky-50">Get Started Today</Button>
+                <Button variant="outline" className="text-white border-white hover:bg-sky-700">
+                  Learn More
+                </Button>
+              </div>
+            </div>
+          </div>
+        </section>
+      </main>
 
       {/* Footer */}
-      <footer className="bg-gray-900 text-white py-6">
-        <div className="max-w-5xl mx-auto px-4 sm:px-6 text-center">
-          <div className="font-medium text-lg mb-2">{appName}</div>
-          <div className="text-gray-400 text-sm">
-            © {new Date().getFullYear()} {appName}. All rights reserved.
+      <footer className="w-full py-6 md:py-12 bg-gray-900 text-gray-300">
+        <div className="container px-4 md:px-6">
+          <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-4">
+            <div className="space-y-4">
+              <div className="flex items-center gap-2">
+              <img src={'/assets/aeroverse.png'} className="h-15 w-20" />
+                <span className="text-xl font-bold text-white">Aeroverse Laundry</span>
+              </div>
+              <p className="text-sm text-gray-400">
+                Professional laundry services for all your clothing needs. Quality, reliability, and convenience.
+              </p>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold">Quick Links</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="/" className="text-sm hover:text-sky-400 transition-colors">
+                    Home
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#services" className="text-sm hover:text-sky-400 transition-colors">
+                    Services
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#pricing" className="text-sm hover:text-sky-400 transition-colors">
+                    Pricing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#contact" className="text-sm hover:text-sky-400 transition-colors">
+                    Contact
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold">Services</h3>
+              <ul className="space-y-2">
+                <li>
+                  <Link href="#" className="text-sm hover:text-sky-400 transition-colors">
+                    Wash & Fold
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm hover:text-sky-400 transition-colors">
+                    Dry Cleaning
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm hover:text-sky-400 transition-colors">
+                    Ironing
+                  </Link>
+                </li>
+                <li>
+                  <Link href="#" className="text-sm hover:text-sky-400 transition-colors">
+                    Stain Removal
+                  </Link>
+                </li>
+              </ul>
+            </div>
+            <div className="space-y-4">
+              <h3 className="text-lg font-bold">Newsletter</h3>
+              <p className="text-sm text-gray-400">Subscribe to our newsletter for tips and special offers.</p>
+              <div className="flex space-x-2">
+                <input
+                  type="email"
+                  placeholder="Your email"
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+                />
+                <Button className="bg-sky-600 hover:bg-sky-700">
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="mt-8 border-t border-gray-800 pt-8 text-center text-sm text-gray-400">
+            <p>© {new Date().getFullYear()} Aeroverse Laundry. All rights reserved.</p>
           </div>
         </div>
       </footer>
