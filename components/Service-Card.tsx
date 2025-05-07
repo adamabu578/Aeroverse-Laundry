@@ -11,7 +11,7 @@ interface ServiceCardProps {
 
 export default function ServiceCard({ title, description, icon: Icon = Shirt, price }: ServiceCardProps) {
   return (
-    <Card className="flex flex-col h-full transition-all hover:shadow-md">
+    <Card className="flex flex-col h-full transition-all hover:shadow-md  hover:bg-sky-400">
       <CardHeader className="space-y-2 sm:space-y-0">
         <div className="flex flex-col sm:flex-row sm:items-center gap-2">
           <div className="rounded-full bg-sky-100 p-2 w-fit">

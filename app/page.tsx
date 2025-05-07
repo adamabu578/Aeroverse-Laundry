@@ -136,7 +136,7 @@ export default function Home() {
               </div>
             </div>
             <div className="mx-auto grid max-w-5xl grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6 py-8 sm:py-12">
-              <div className="flex flex-col items-center space-y-2 rounded-lg border p-4 sm:p-6 shadow-sm">
+              <div className="flex flex-col items-center space-y-2 rounded-lg border p-4 sm:p-6 shadow-sm border-sky-600 hover:bg-sky-400">
                 <div className="rounded-full bg-sky-100 p-3">
                   <Shirt className="h-6 w-6 text-sky-600" />
                 </div>
@@ -145,7 +145,7 @@ export default function Home() {
                   Our professionals handle your clothes with care, ensuring they look their best.
                 </p>
               </div>
-              <div className="flex flex-col items-center space-y-2 rounded-lg border p-4 sm:p-6 shadow-sm">
+              <div className="flex flex-col items-center space-y-2 rounded-lg border p-4 sm:p-6 shadow-sm border-sky-600 hover:bg-sky-400">
                 <div className="rounded-full bg-sky-100 p-3">
                   <Clock className="h-6 w-6 text-sky-600" />
                 </div>
@@ -154,7 +154,7 @@ export default function Home() {
                   Get your clothes back fast with our efficient service and timely delivery.
                 </p>
               </div>
-              <div className="flex flex-col items-center space-y-2 rounded-lg border p-4 sm:p-6 shadow-sm sm:col-span-2 md:col-span-1">
+              <div className="flex flex-col items-center space-y-2 rounded-lg border p-4 sm:p-6 shadow-sm sm:col-span-2 md:col-span-1 border-sky-600 hover:bg-sky-400">
                 <div className="rounded-full bg-sky-100 p-3">
                   <MapPin className="h-6 w-6 text-sky-600" />
                 </div>
@@ -181,12 +181,12 @@ export default function Home() {
                 </p>
               </div>
             </div>
-            <div className="mx-auto grid max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 py-8 sm:py-12">
-              <ServiceCard
+            <div className="mx-auto grid max-w-5xl grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 py-8 sm:py-12 ">
+              <ServiceCard 
                 title="Wash & Fold"
                 description="Regular washing and folding service for everyday clothes."
                 icon={Shirt}
-                price="$2.50/lb"
+                price="$2.50"
               />
               <ServiceCard
                 title="Dry Cleaning"
